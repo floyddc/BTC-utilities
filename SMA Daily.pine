@@ -1,0 +1,8 @@
+//@version=4
+study(title="50/200 daily", overlay=true)
+
+sma50 = sma(close, 50)
+sma200 = ema(close, 200)
+
+p2 = plot(sma50, color=color.red, title="SMA 50")
+p3 = plot(sma200, color=color.blue, title="SMA 200")

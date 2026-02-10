@@ -1,0 +1,19 @@
+//@version=4
+study(title="Weekly", overlay=true)
+
+ema21 = ema(close, 21)
+ema50 = ema(close, 50)
+ema200 = ema(close, 200)
+ema300 = ema(close, 300)
+ema400 = ema(close, 400)
+
+p1 = plot(ema21, color=color.green, title="EMA 21")
+p2 = plot(ema50, color=color.red, title="EMA 50")
+p3 = plot(ema200, color=color.orange, title="EMA 200")
+p4 = plot(ema300, color=color.maroon, title="EMA 300")
+p5 = plot(ema400, color=color.purple, title="EMA 400")
+
+bull = ema21 > ema50
+bear = ema21 < ema50
+
+fill(p1, p2, color=bull ? color.green : bear ? color.red : na, transp=80)

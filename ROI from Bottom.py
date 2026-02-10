@@ -47,12 +47,11 @@ btc = get_crypto_data("2013-01-01", current_date)
 print(f"Data available from {btc.index[0].date()} to {btc.index[-1].date()}")
 print(f"Total days: {len(btc)}")
 
-# ---------------------------- Cycles ----------------------------
+# ---------------------------- Cycles (bottom_date, peak_date) ----------------------------
 cycles = {
-    "Cycle 1 (2013)": ("2013-11-29", "2015-01-14"),
-    "Cycle 2 (2017)": ("2017-12-17", "2018-12-16"),
-    "Cycle 3 (2021)": ("2021-11-08", "2022-11-09"),
-    "Cycle 4 (2025)": ("2025-10-06", None),
+    "Cycle 1 (2015)": ("2015-01-14", "2017-12-17"),
+    "Cycle 2 (2018)": ("2018-12-16", "2021-11-08"),
+    "Cycle 3 (2022)": ("2022-11-09", "2025-10-06"),
 }
 
 plt.style.use('dark_background')
@@ -62,39 +61,39 @@ plt.gca().set_facecolor('#0a0a0a')
 
 # ---------------------------- ROI calculation ----------------------------
 colors = ['#ef4444', "#eae308", '#22c55e', '#3b82f6']
-bottom_rois = []  # Store final ROI values for y-axis ticks
+peak_rois = []  # Store final ROI values for y-axis ticks
 
-for idx, (cycle_name, (peak_date_str, bottom_date_str)) in enumerate(cycles.items()):
-    peak_date = pd.Timestamp(peak_date_str)
+for idx, (cycle_name, (bottom_date_str, peak_date_str)) in enumerate(cycles.items()):
+    bottom_date = pd.Timestamp(bottom_date_str)
     
-    if peak_date not in btc.index:
-        idx_nearest = btc.index.get_indexer([peak_date], method='nearest')[0]
-        peak_date = btc.index[idx_nearest]
+    if bottom_date not in btc.index:
+        idx_nearest = btc.index.get_indexer([bottom_date], method='nearest')[0]
+        bottom_date = btc.index[idx_nearest]
     
-    peak_price = btc.loc[peak_date, 'Close']
-    if isinstance(peak_price, pd.Series):
-        peak_price = peak_price.iloc[0]
+    bottom_price = btc.loc[bottom_date, 'Close']
+    if isinstance(bottom_price, pd.Series):
+        bottom_price = bottom_price.iloc[0]
     
     print(f"\n{cycle_name}")
-    print(f"  📈 ATH: ${peak_price:,.2f} at {peak_date.date()}")
+    print(f"  📉 Bottom: ${bottom_price:,.2f} at {bottom_date.date()}")
     
-    if bottom_date_str is None:
+    if peak_date_str is None:
         end_date = btc.index[-1]
     else:
-        end_date = pd.Timestamp(bottom_date_str)
+        end_date = pd.Timestamp(peak_date_str)
         if end_date not in btc.index:
             idx_nearest = btc.index.get_indexer([end_date], method='nearest')[0]
             end_date = btc.index[idx_nearest]
     
-    after_peak = btc.loc[peak_date:end_date].copy()
+    after_bottom = btc.loc[bottom_date:end_date].copy()
     
-    if len(after_peak) > 0:
-        after_peak = after_peak.reset_index(drop=True)
-        after_peak['ROI'] = after_peak['Close'] / peak_price
-        after_peak['Days'] = range(len(after_peak))
+    if len(after_bottom) > 0:
+        after_bottom = after_bottom.reset_index(drop=True)
+        after_bottom['ROI'] = after_bottom['Close'] / bottom_price
+        after_bottom['Days'] = range(len(after_bottom))
         
         # Remove outlier
-        roi_values = after_peak['ROI'].copy()
+        roi_values = after_bottom['ROI'].copy()
         
         rolling_median = roi_values.rolling(window=5, center=True, min_periods=1).median()
         rolling_std = roi_values.rolling(window=5, center=True, min_periods=1).std()
@@ -104,23 +103,23 @@ for idx, (cycle_name, (peak_date_str, bottom_date_str)) in enumerate(cycles.item
         
         # Outlier substitution
         roi_values[outliers] = np.nan
-        after_peak['ROI'] = roi_values.interpolate(method='linear')
+        after_bottom['ROI'] = roi_values.interpolate(method='linear')
         
-        min_day = len(after_peak) - 1
-        min_price = after_peak.loc[min_day, 'Close']
-        if isinstance(min_price, pd.Series):
-            min_price = min_price.iloc[0]
-        min_roi = (min_price / peak_price - 1) * 100
+        max_day = len(after_bottom) - 1
+        max_price = after_bottom.loc[max_day, 'Close']
+        if isinstance(max_price, pd.Series):
+            max_price = max_price.iloc[0]
+        max_roi = (max_price / bottom_price - 1) * 100
         
-        print(f"  📉 Bottom: {min_roi:.1f}% (${min_price:,.2f}) after {int(min_day)} days")
-
+        print(f"  📈 Peak: +{max_roi:.1f}% (${max_price:,.2f}) after {int(max_day)} days")
+        
         # Store final ROI value for y-axis
-        final_roi = after_peak['ROI'].iloc[-1]
-        bottom_rois.append(final_roi)
+        final_roi = after_bottom['ROI'].iloc[-1]
+        peak_rois.append(final_roi)
         
         plt.plot(
-            after_peak['Days'],
-            after_peak['ROI'],
+            after_bottom['Days'],
+            after_bottom['ROI'],
             label=cycle_name,
             color=colors[idx % len(colors)],
             linewidth=1.5,
@@ -130,21 +129,25 @@ for idx, (cycle_name, (peak_date_str, bottom_date_str)) in enumerate(cycles.item
 # ---------------------------- Styling ----------------------------
 def format_roi(value, pos):
     """Converte moltiplicatore in percentuale"""
-    return f'{(value - 1) * 100:.0f}%'
+    return f'+{(value - 1) * 100:.0f}%' if value >= 1 else f'{(value - 1) * 100:.0f}%'
 
+plt.yscale('log')
 plt.gca().yaxis.set_major_formatter(FuncFormatter(format_roi))
 
 current_ticks = plt.gca().get_yticks()
-custom_ticks = sorted(set(list(current_ticks) + bottom_rois))
+custom_ticks = sorted(set(list(current_ticks) + peak_rois))
 plt.yticks(custom_ticks)
 
-plt.axhline(0.2, color='gray', linewidth=0.5, linestyle=':', alpha=0.3)
-plt.title("Bitcoin: ROI ATH -> Bottom", fontsize=18, fontweight='bold', color='white', pad=20)
-plt.xlabel("Days from ATH", fontsize=13, color='white')
-plt.ylabel("ROI % from ATH", fontsize=13, color='white')
-plt.legend(loc='lower right', fontsize=11, framealpha=0.9)
+plt.axhline(1.0, color='gray', linewidth=0.5, linestyle=':', alpha=0.3)
+plt.title("Bitcoin: ROI Bottom -> ATH", fontsize=18, fontweight='bold', color='white', pad=20)
+plt.xlabel("Days from Bottom", fontsize=13, color='white')
+plt.ylabel("ROI % from Bottom", fontsize=13, color='white')
+plt.legend(loc='upper left', fontsize=11, framealpha=0.9)
 plt.grid(alpha=0.15, color='gray', linestyle='-', linewidth=0.5)
-plt.ylim(-0.1, 1.1)
+
+max_roi = max(peak_rois)
+plt.ylim(0.98, max_roi * 1.15)
+
 plt.tight_layout()
 
 print("\n" + "="*60)

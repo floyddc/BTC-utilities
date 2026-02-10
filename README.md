@@ -3,7 +3,7 @@
 - ## 📈 ROI from ATH (python file) 
 This script displays a chart showing the return of investments (ROI) for each BTC cycle. This allows you to compare the various cycles and understand where we are in the bear market.
 ### ⚙️ Usage
-Open Terminal in the same folder or the file and type: _python3 '.\ROI from ATH.py'_, then enjoy the view!
+Open Terminal in the same folder of the file and type: _python3 '.\ROI from ATH.py'_, then enjoy the view!
 
 - ## 📈 EMA Weekly (pine script)
 This script displays the moving averages 21, 50, 200, 300, 400 on the weekly timeframe. 

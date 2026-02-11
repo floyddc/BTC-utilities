@@ -1,12 +1,12 @@
 # ₿ BTC Utilities 📝
 
-- ## 📈 ROI from ATH (python file) 
+- ## 📉 ROI from ATH (python file) 
 This script displays a chart showing the return of investments (ROI) for each BTC cycle, starting from the ATH and ending at the bottom.<br>
 This allows you to compare the various cycles and understand where we are in the **bear** market.
 ### ⚙️ Usage
 Open Terminal in the same folder of the file and type: _python3 '.\ROI from ATH.py'_, then enjoy the view!
 
-- ## 📈 ROI from Bottom (python file) 
+- ## 💹 ROI from Bottom (python file) 
 This script displays a chart showing the return of investments (ROI) for each BTC cycle, starting from the bottom and ending at the ATH.<br>
 This allows you to compare the various cycles and understand where we are in the **bull** market.
 ### ⚙️ Usage
@@ -17,6 +17,12 @@ This script displays a chart showing the return of investments (ROI) for each BT
 This allows you to compare the various cycles and understand how the price action behaves **between two halvings**.
 ### ⚙️ Usage
 Open Terminal in the same folder of the file and type: _python3 '.\ROI from Halving.py'_, then enjoy the view!
+
+- ## 📊 Risk Index (python file) 
+This script displays a chart showing the risk level in case you want to execute a specific operation (buy or sell) in a specific moment.<br>
+This allows you to analyse the situation and take an effective decision.
+### ⚙️ Usage
+Open Terminal in the same folder of the file and type: _python3 '.\Risk Index.py'_, then enjoy the view!
 
 - ## 📈 EMA Weekly (pine script)
 This script displays the moving averages 21, 50, 200, 300, 400 on the weekly timeframe. 

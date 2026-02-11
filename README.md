@@ -12,6 +12,12 @@ This allows you to compare the various cycles and understand where we are in the
 ### ⚙️ Usage
 Open Terminal in the same folder of the file and type: _python3 '.\ROI from Bottom.py'_, then enjoy the view!
 
+- ## 📈 ROI from Halving (python file) 
+This script displays a chart showing the return of investments (ROI) for each BTC cycle, starting from a halving and ending at the next one.<br>
+This allows you to compare the various cycles and understand how the price action behaves **between two halvings**.
+### ⚙️ Usage
+Open Terminal in the same folder of the file and type: _python3 '.\ROI from Halving.py'_, then enjoy the view!
+
 - ## 📈 EMA Weekly (pine script)
 This script displays the moving averages 21, 50, 200, 300, 400 on the weekly timeframe. 
 ### 💡 Tips
